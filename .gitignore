@@ -1,0 +1,25 @@
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Variables de entorno (NO subir API Keys)
+.env
+.env.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Carpetas de dependencias (si las hubiera)
+node_modules/
+vendor/
+
+# Archivos temporales
+*.tmp
+*.bak
+*.swp
+*~
+
+# Configuración de VS Code personal (opcional)
+.vscode/settings.json
