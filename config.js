@@ -2,7 +2,7 @@ const CONFIG = {
     // ⚠️ IMPORTANTE: Reemplaza con tu API Key REAL solo en tu PC local
     // NO subas este archivo a GitHub con la clave real
     GEMINI_API_KEY: 'PON_TU_API_KEY_AQUI',
-    GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
+    GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent'
 };
 
 const SYSTEM_PROMPT = `Eres un asistente técnico especializado en reparación de televisores TRC y LCD/LED. 
