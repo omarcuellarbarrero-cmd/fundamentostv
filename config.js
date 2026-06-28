@@ -1,7 +1,7 @@
 const CONFIG = {
     // ⚠️ IMPORTANTE: Reemplaza con tu API Key REAL solo en tu PC local
     // NO subas este archivo a GitHub con la clave real
-    GEMINI_API_KEY: 'AIzaSyDn-7ziUsxdxU4xrSDhUGG7mtW5GLfm_rU',
+    GEMINI_API_KEY: 'AQ.Ab8RN6IIz00H-j556S5vBFdt7IeZUMuR_Xcu59g-CL_48Wljnggit',
     GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent'
 };
 
