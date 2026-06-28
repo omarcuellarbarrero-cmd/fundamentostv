@@ -23,3 +23,36 @@ FORMATO DE RESPUESTA:
 - Divide la información en secciones claras
 - Usa listas numeradas para pasos o procedimientos
 - Termina con un resumen o consejo práctico`;
+// Función para mostrar resultados
+function mostrarResultados(texto) {
+    console.log('=== RESPUESTA COMPLETA DE GEMINI ===');
+    console.log('Longitud:', texto.length, 'caracteres');
+    console.log('Texto:', texto);
+    console.log('====================================');
+    
+    var html = texto
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^### (.*$)/gm, '<h4>$1</h4>')
+        .replace(/^## (.*$)/gm, '<h4>$1</h4>')
+        .replace(/^# (.*$)/gm, '<h4>$1</h4>')
+        .replace(/^\- (.*$)/gm, '<li>$1</li>')
+        .replace(/^\* (.*$)/gm, '<li>$1</li>')
+        .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
+        .replace(/<\/li>\n<li>/g, '</li><li>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+    
+    html = html.replace(/(<li>.*?<\/li>)/gs, '<ul>$1</ul>');
+    html = html.replace(/<\/ul><ul>/g, '');
+    html = '<p>' + html + '</p>';
+    html = html.replace(/<p><\/p>/g, '');
+    html = html.replace(/<p><ul>/g, '<ul>');
+    html = html.replace(/<\/ul><\/p>/g, '</ul>');
+    html = html.replace(/<p><h4>/g, '<h4>');
+    html = html.replace(/<\/h4><\/p>/g, '</h4>');
+    
+    document.getElementById('resultsContent').innerHTML = html;
+    document.getElementById('resultsSection').classList.remove('hidden');
+    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}

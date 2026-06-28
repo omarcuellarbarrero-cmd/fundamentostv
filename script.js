@@ -195,11 +195,6 @@ async function consultarGemini(consulta, tipoTV) {
 
 // Función para mostrar resultados
 function mostrarResultados(texto) {
-    console.log('=== RESPUESTA COMPLETA DE GEMINI ===');
-    console.log('Longitud:', texto.length, 'caracteres');
-    console.log('Texto:', texto);
-    console.log('====================================');
-    
     var html = texto
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -226,3 +221,5 @@ function mostrarResultados(texto) {
     document.getElementById('resultsSection').classList.remove('hidden');
     document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
+console.log('=== FIN script.js ===');
