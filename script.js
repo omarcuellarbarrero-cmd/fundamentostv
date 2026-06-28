@@ -134,12 +134,13 @@ async function realizarBusqueda() {
     }
 }
 
-// Función para llamar a Gemini
+// Función para llamar a Gemini (versión mejorada)
 async function consultarGemini(consulta, tipoTV) {
     var promptCompleto = SYSTEM_PROMPT + 
         '\n\nTIPO DE TV: ' + tipoTV + 
         '\nCONSULTA DEL TÉCNICO: ' + consulta + 
-        '\n\nPor favor, proporciona una respuesta clara, ordenada y práctica para el técnico reparador.';
+        '\n\nPor favor, proporciona una respuesta clara, ordenada y práctica para el técnico reparador. ' +
+        'Sé lo más completo posible pero conciso.';
     
     var response = await fetch(CONFIG.GEMINI_API_URL + '?key=' + CONFIG.GEMINI_API_KEY, {
         method: 'POST',
@@ -162,15 +163,43 @@ async function consultarGemini(consulta, tipoTV) {
     });
     
     if (!response.ok) {
-        throw new Error('Error en la API de Gemini (código: ' + response.status + ')');
+        var errorText = await response.text();
+        throw new Error('Error en la API de Gemini (código: ' + response.status + '): ' + errorText);
     }
     
     var data = await response.json();
+    
+    // Verificar que hay respuesta
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts[0]) {
+        console.error('Respuesta completa de Gemini:', data);
+        throw new Error('Respuesta vacía o inválida de Gemini');
+    }
+    
+    var respuesta = data.candidates[0].content.parts[0].text;
+    
+    // Verificar si fue truncada
+    if (data.candidates[0].finishReason === 'MAX_TOKENS') {
+        console.warn('⚠️ La respuesta fue truncada por límite de tokens');
+        respuesta += '\n\n---\n⚠️ *Nota: La respuesta fue truncada por ser muy larga.*';
+    }
+    
+    return respuesta;
+}    
+    // Verificar que hay respuesta
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts[0]) {
+        throw new Error('Respuesta vacía o inválida de Gemini');
+    }
+    
     return data.candidates[0].content.parts[0].text;
 }
 
 // Función para mostrar resultados
 function mostrarResultados(texto) {
+    console.log('=== RESPUESTA COMPLETA DE GEMINI ===');
+    console.log('Longitud:', texto.length, 'caracteres');
+    console.log('Texto:', texto);
+    console.log('====================================');
+    
     var html = texto
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -197,5 +226,3 @@ function mostrarResultados(texto) {
     document.getElementById('resultsSection').classList.remove('hidden');
     document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
-
-console.log('=== FIN script.js ===');
