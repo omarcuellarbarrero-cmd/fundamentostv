@@ -1,37 +1,45 @@
-async function consultarGemini(consulta, tipoTV) {
-    const promptCompleto = `
-        ${SYSTEM_PROMPT}
-        
-        TIPO DE TV: ${tipoTV}
-        CONSULTA DEL TÉCNICO: ${consulta}
-        
-        Por favor, proporciona una respuesta clara, ordenada y práctica para el técnico reparador.
-    `;
+console.log('=== INICIO script.js ===');
+
+try {
+    if (!localStorage.getItem('usuario')) {
+        console.log('No hay usuario, redirigiendo a login');
+        window.location.href = 'index.html';
+    } else {
+        console.log('Usuario encontrado:', localStorage.getItem('usuario'));
+    }
+} catch (e) {
+    console.error('Error al verificar usuario:', e);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('=== DOM CARGADO ===');
     
-    const response = await fetch(`${CONFIG.GEMINI_API_URL}?key=${CONFIG.GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            contents: [{
-                parts: [{
-                    text: promptCompleto
-                }]
-            }],
-            generationConfig: {
-                temperature: 0.7,
-                topK: 40,
-                topP: 0.95,
-                maxOutputTokens: 1024,
+    var logoutBtn = document.getElementById('logoutBtn');
+    var searchBtn = document.getElementById('searchBtn');
+    var searchInput = document.getElementById('searchInput');
+    
+    console.log('logoutBtn existe:', !!logoutBtn);
+    console.log('searchBtn existe:', !!searchBtn);
+    console.log('searchInput existe:', !!searchInput);
+    
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            console.log('Boton salir clickeado');
+            if (confirm('¿Desea salir?')) {
+                localStorage.removeItem('usuario');
+                window.location.href = 'index.html';
             }
-        })
-    });
-    
-    if (!response.ok) {
-        throw new Error('Error en la API de Gemini');
+        });
+        console.log('Event listener de logout configurado');
     }
     
-    const data = await response.json();
-    return data.candidates[0].content.parts[0].text;
-}
+    if (searchBtn && searchInput) {
+        searchBtn.addEventListener('click', function() {
+            console.log('Boton buscar clickeado');
+            alert('Buscando: ' + searchInput.value);
+        });
+        console.log('Event listener de busqueda configurado');
+    }
+});
+
+console.log('=== FIN script.js ===');
