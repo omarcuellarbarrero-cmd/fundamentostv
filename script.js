@@ -64,14 +64,44 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Escuchar respuesta
+    // ============================================
+    // LECTOR DE VOZ (Versión Simple y Automática)
+    // ============================================
+    
+    var vocesDisponibles = [];
+    var vozSeleccionada = null;
     var speaking = false;
+    
+    // Función para cargar y buscar voz en español automáticamente
+    function cargarVoces() {
+        vocesDisponibles = window.speechSynthesis.getVoices();
+        
+        // Buscar la primera voz disponible que sea en español
+        vozSeleccionada = vocesDisponibles.find(function(v) {
+            return v.lang.startsWith('es');
+        });
+        
+        if (vozSeleccionada) {
+            console.log('✅ Voz en español detectada:', vozSeleccionada.name);
+        } else {
+            console.warn('⚠️ No se encontró voz en español. Se usará la predeterminada.');
+        }
+    }
+    
+    // En algunos navegadores (como Chrome), las voces se cargan de forma asíncrona
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = cargarVoces;
+    }
+    cargarVoces(); // Intento inicial
+    
+    // Evento del botón "Escuchar"
     listenBtn.addEventListener('click', function() {
         if (!('speechSynthesis' in window)) {
-            alert('Su navegador no soporta la función de lectura en voz alta');
+            alert('Su navegador no soporta la lectura en voz alta');
             return;
         }
         
+        // Si ya está hablando, detener
         if (speaking) {
             window.speechSynthesis.cancel();
             listenBtn.textContent = '🔊 Escuchar';
@@ -80,23 +110,43 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         var texto = resultsContent.innerText;
-        var utterance = new SpeechSynthesisUtterance(texto);
-        utterance.lang = 'es-ES';
-        utterance.rate = 0.9;
-        utterance.pitch = 1;
+        if (!texto.trim()) {
+            alert('No hay información para leer');
+            return;
+        }
         
+        var utterance = new SpeechSynthesisUtterance(texto);
+        
+        // Asignar la voz en español si el navegador la tiene
+        if (vozSeleccionada) {
+            utterance.voice = vozSeleccionada;
+        }
+        
+        // Configuración optimizada para adultos mayores (más pausada y clara)
+        utterance.lang = 'es-ES';
+        utterance.rate = 0.85;    // Velocidad un 15% más lenta
+        utterance.pitch = 1;      // Tono normal
+        utterance.volume = 1;     // Volumen al máximo
+        
+        // Cuando termine de leer
         utterance.onend = function() {
             listenBtn.textContent = '🔊 Escuchar';
             speaking = false;
         };
         
+        // Si hay algún error
+        utterance.onerror = function(e) {
+            console.error('Error en el lector de voz:', e);
+            listenBtn.textContent = '🔊 Escuchar';
+            speaking = false;
+        };
+        
+        // Iniciar lectura
         window.speechSynthesis.speak(utterance);
         listenBtn.textContent = '⏸️ Detener';
         speaking = true;
-    });
-    
-    console.log('=== Todos los event listeners configurados ===');
-});
+    }
+);
 
 // Función de búsqueda
 async function realizarBusqueda() {
