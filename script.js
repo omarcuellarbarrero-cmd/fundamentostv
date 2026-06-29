@@ -24,26 +24,96 @@ document.addEventListener('DOMContentLoaded', function() {
     var loading = document.getElementById('loading');
     var listenBtn = document.getElementById('listenBtn');
     var logoutBtn = document.getElementById('logoutBtn');
+    var voiceSelect = document.getElementById('voiceSelect');
     
-    // --- LECTOR DE VOZ (Versión Simple) ---
+    // --- LECTOR DE VOZ (Versión Completa con Selector) ---
     var vocesDisponibles = [];
     var vozSeleccionada = null;
     var speaking = false;
     
     function cargarVoces() {
         vocesDisponibles = window.speechSynthesis.getVoices();
+        console.log('Voces disponibles:', vocesDisponibles.length);
+        
+        // Buscar voz en español automáticamente
         vozSeleccionada = vocesDisponibles.find(function(v) {
             return v.lang.startsWith('es');
         });
+        
         if (vozSeleccionada) {
             console.log('✅ Voz en español detectada:', vozSeleccionada.name);
+        } else {
+            console.warn('⚠️ No se encontró voz en español');
+        }
+        
+        actualizarSelectorVoces();
+    }
+    
+    function actualizarSelectorVoces() {
+        if (!voiceSelect) return;
+        
+        voiceSelect.innerHTML = '';
+        
+        // Agregar opción para voz predeterminada
+        var defaultOption = document.createElement('option');
+        defaultOption.value = 'default';
+        defaultOption.textContent = ' Voz predeterminada del sistema';
+        voiceSelect.appendChild(defaultOption);
+        
+        // Separador para voces en español
+        var spanishGroup = document.createElement('optgroup');
+        spanishGroup.label = '🇪🇸 Voces en Español';
+        
+        // Separador para otras voces
+        var otherGroup = document.createElement('optgroup');
+        otherGroup.label = '🌍 Otras voces';
+        
+        vocesDisponibles.forEach(function(v, i) {
+            var option = document.createElement('option');
+            option.value = i;
+            option.textContent = v.name + ' (' + v.lang + ')';
+            
+            if (v.lang.startsWith('es')) {
+                spanishGroup.appendChild(option);
+                if (v === vozSeleccionada) {
+                    option.selected = true;
+                }
+            } else {
+                otherGroup.appendChild(option);
+            }
+        });
+        
+        if (spanishGroup.children.length > 0) {
+            voiceSelect.appendChild(spanishGroup);
+        }
+        if (otherGroup.children.length > 0) {
+            voiceSelect.appendChild(otherGroup);
         }
     }
     
+    // Cargar voces (algunos navegadores lo hacen asíncronamente)
     if (window.speechSynthesis.onvoiceschanged !== undefined) {
         window.speechSynthesis.onvoiceschanged = cargarVoces;
     }
     cargarVoces();
+    
+    // Evento cuando cambia la voz seleccionada
+    if (voiceSelect) {
+        voiceSelect.addEventListener('change', function() {
+            var value = this.value;
+            
+            if (value === 'default') {
+                vozSeleccionada = null;
+                console.log('Voz cambiada a: predeterminada');
+            } else {
+                var idx = parseInt(value);
+                if (!isNaN(idx) && vocesDisponibles[idx]) {
+                    vozSeleccionada = vocesDisponibles[idx];
+                    console.log('Voz cambiada a:', vozSeleccionada.name);
+                }
+            }
+        });
+    }
     // ----------------------------------------
 
     // Selección de tipo de TV
@@ -97,6 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         var utterance = new SpeechSynthesisUtterance(texto);
         
+        // Usar la voz seleccionada (si no es null)
         if (vozSeleccionada) {
             utterance.voice = vozSeleccionada;
         }
@@ -107,23 +178,23 @@ document.addEventListener('DOMContentLoaded', function() {
         utterance.volume = 1;
         
         utterance.onend = function() {
-            listenBtn.textContent = ' Escuchar';
+            listenBtn.textContent = '🔊 Escuchar';
             speaking = false;
         };
         
         utterance.onerror = function(e) {
             console.error('Error en el lector de voz:', e);
-            listenBtn.textContent = ' Escuchar';
+            listenBtn.textContent = '🔊 Escuchar';
             speaking = false;
         };
         
         window.speechSynthesis.speak(utterance);
-        listenBtn.textContent = '️ Detener';
+        listenBtn.textContent = '⏸️ Detener';
         speaking = true;
     });
 
     console.log('=== FIN DOMContentLoaded ===');
-}); // <--- ¡Este cierre es el que probablemente faltaba!
+});
 
 // 4. Función de búsqueda
 async function realizarBusqueda() {

@@ -50,16 +50,24 @@
         </section>
         
         <!-- Resultados -->
-        <section id="resultsSection" class="results-section hidden">
-            <div class="results-header">
-                <h3>Respuesta:</h3>
-                <button id="listenBtn" class="btn-secondary" title="Escuchar respuesta">
-                    🔊 Escuchar
-                </button>
-            </div>
-            <div id="resultsContent" class="results-content"></div>
-        </section>
-        
+<section id="resultsSection" class="results-section hidden">
+    <div class="results-header">
+        <h3>Respuesta:</h3>
+        <button id="listenBtn" class="btn-secondary" title="Escuchar respuesta">
+            🔊 Escuchar
+        </button>
+    </div>
+    
+    <!-- Selector de voz -->
+    <div class="voice-selector">
+        <label for="voiceSelect">🎙️ Voz:</label>
+        <select id="voiceSelect" class="voice-select">
+            <option value="">Cargando voces...</option>
+        </select>
+    </div>
+    
+    <div id="resultsContent" class="results-content"></div>
+</section>
         <!-- Loading -->
         <div id="loading" class="loading hidden">
             <div class="spinner"></div>
