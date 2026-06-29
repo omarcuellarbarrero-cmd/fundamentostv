@@ -1,6 +1,6 @@
 console.log('=== INICIO script.js ===');
 
-// Verificar autenticación
+// 1. Verificar autenticación
 if (!localStorage.getItem('usuario')) {
     console.log('No hay usuario, redirigiendo a login');
     window.location.href = 'index.html';
@@ -8,9 +8,10 @@ if (!localStorage.getItem('usuario')) {
     console.log('Usuario encontrado:', localStorage.getItem('usuario'));
 }
 
-// Variables globales
+// 2. Variables globales
 var tipoTVSeleccionado = null;
 
+// 3. Esperar a que el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
     console.log('=== DOM CARGADO ===');
     
@@ -24,17 +25,30 @@ document.addEventListener('DOMContentLoaded', function() {
     var listenBtn = document.getElementById('listenBtn');
     var logoutBtn = document.getElementById('logoutBtn');
     
-    console.log('Elementos encontrados:', {
-        tvButtons: tvButtons.length,
-        searchInput: !!searchInput,
-        searchBtn: !!searchBtn,
-        logoutBtn: !!logoutBtn
-    });
+    // --- LECTOR DE VOZ (Versión Simple) ---
+    var vocesDisponibles = [];
+    var vozSeleccionada = null;
+    var speaking = false;
     
+    function cargarVoces() {
+        vocesDisponibles = window.speechSynthesis.getVoices();
+        vozSeleccionada = vocesDisponibles.find(function(v) {
+            return v.lang.startsWith('es');
+        });
+        if (vozSeleccionada) {
+            console.log('✅ Voz en español detectada:', vozSeleccionada.name);
+        }
+    }
+    
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = cargarVoces;
+    }
+    cargarVoces();
+    // ----------------------------------------
+
     // Selección de tipo de TV
     tvButtons.forEach(function(btn) {
         btn.addEventListener('click', function() {
-            console.log('Botón TV clickeado:', this.dataset.type);
             tvButtons.forEach(function(b) { b.classList.remove('active'); });
             this.classList.add('active');
             tipoTVSeleccionado = this.dataset.type;
@@ -44,55 +58,22 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Búsqueda
     searchBtn.addEventListener('click', function() {
-        console.log('Botón buscar clickeado');
         realizarBusqueda();
     });
     
     searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
-            console.log('Enter presionado');
             realizarBusqueda();
         }
     });
     
     // Logout
     logoutBtn.addEventListener('click', function() {
-        console.log('Botón salir clickeado');
         if (confirm('¿Está seguro que desea salir?')) {
             localStorage.removeItem('usuario');
             window.location.href = 'index.html';
         }
     });
-    
-    // ============================================
-    // LECTOR DE VOZ (Versión Simple y Automática)
-    // ============================================
-    
-    var vocesDisponibles = [];
-    var vozSeleccionada = null;
-    var speaking = false;
-    
-    // Función para cargar y buscar voz en español automáticamente
-    function cargarVoces() {
-        vocesDisponibles = window.speechSynthesis.getVoices();
-        
-        // Buscar la primera voz disponible que sea en español
-        vozSeleccionada = vocesDisponibles.find(function(v) {
-            return v.lang.startsWith('es');
-        });
-        
-        if (vozSeleccionada) {
-            console.log('✅ Voz en español detectada:', vozSeleccionada.name);
-        } else {
-            console.warn('⚠️ No se encontró voz en español. Se usará la predeterminada.');
-        }
-    }
-    
-    // En algunos navegadores (como Chrome), las voces se cargan de forma asíncrona
-    if (window.speechSynthesis.onvoiceschanged !== undefined) {
-        window.speechSynthesis.onvoiceschanged = cargarVoces;
-    }
-    cargarVoces(); // Intento inicial
     
     // Evento del botón "Escuchar"
     listenBtn.addEventListener('click', function() {
@@ -101,7 +82,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Si ya está hablando, detener
         if (speaking) {
             window.speechSynthesis.cancel();
             listenBtn.textContent = '🔊 Escuchar';
@@ -117,41 +97,36 @@ document.addEventListener('DOMContentLoaded', function() {
         
         var utterance = new SpeechSynthesisUtterance(texto);
         
-        // Asignar la voz en español si el navegador la tiene
         if (vozSeleccionada) {
             utterance.voice = vozSeleccionada;
         }
         
-        // Configuración optimizada para adultos mayores (más pausada y clara)
         utterance.lang = 'es-ES';
-        utterance.rate = 0.85;    // Velocidad un 15% más lenta
-        utterance.pitch = 1;      // Tono normal
-        utterance.volume = 1;     // Volumen al máximo
+        utterance.rate = 0.85;
+        utterance.pitch = 1;
+        utterance.volume = 1;
         
-        // Cuando termine de leer
         utterance.onend = function() {
-            listenBtn.textContent = '🔊 Escuchar';
+            listenBtn.textContent = ' Escuchar';
             speaking = false;
         };
         
-        // Si hay algún error
         utterance.onerror = function(e) {
             console.error('Error en el lector de voz:', e);
-            listenBtn.textContent = '🔊 Escuchar';
+            listenBtn.textContent = ' Escuchar';
             speaking = false;
         };
         
-        // Iniciar lectura
         window.speechSynthesis.speak(utterance);
-        listenBtn.textContent = '⏸️ Detener';
+        listenBtn.textContent = '️ Detener';
         speaking = true;
-    }
-);
+    });
 
-// Función de búsqueda
+    console.log('=== FIN DOMContentLoaded ===');
+}); // <--- ¡Este cierre es el que probablemente faltaba!
+
+// 4. Función de búsqueda
 async function realizarBusqueda() {
-    console.log('Iniciando búsqueda...');
-    
     var consulta = document.getElementById('searchInput').value.trim();
     
     if (!consulta) {
@@ -164,9 +139,6 @@ async function realizarBusqueda() {
         return;
     }
     
-    console.log('Consulta:', consulta, 'Tipo TV:', tipoTVSeleccionado);
-    
-    // Mostrar loading
     document.getElementById('loading').classList.remove('hidden');
     document.getElementById('resultsSection').classList.add('hidden');
     
@@ -177,36 +149,30 @@ async function realizarBusqueda() {
         console.error('Error:', error);
         document.getElementById('resultsContent').innerHTML = 
             '<p style="color: #e74c3c;"><strong>Error al obtener la información:</strong><br>' + 
-            error.message + '</p><p>Verifique su conexión a internet o contacte al administrador.</p>';
+            error.message + '</p>';
         document.getElementById('resultsSection').classList.remove('hidden');
     } finally {
         document.getElementById('loading').classList.add('hidden');
     }
 }
 
-// Función para llamar a Gemini
+// 5. Función para llamar a Gemini
 async function consultarGemini(consulta, tipoTV) {
     var promptCompleto = SYSTEM_PROMPT + 
         '\n\nTIPO DE TV: ' + tipoTV + 
         '\nCONSULTA DEL TÉCNICO: ' + consulta + 
-        '\n\nPor favor, proporciona una respuesta clara, ordenada y práctica para el técnico reparador.';
+        '\n\nPor favor, proporciona una respuesta clara, ordenada y práctica.';
     
     var response = await fetch(CONFIG.GEMINI_API_URL + '?key=' + CONFIG.GEMINI_API_KEY, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            contents: [{
-                parts: [{
-                    text: promptCompleto
-                }]
-            }],
+            contents: [{ parts: [{ text: promptCompleto }] }],
             generationConfig: {
                 temperature: 0.7,
                 topK: 40,
                 topP: 0.95,
-                maxOutputTokens: 4096  // 👈 AUMENTADO de 1024 a 4096
+                maxOutputTokens: 4096
             }
         })
     });
@@ -216,10 +182,21 @@ async function consultarGemini(consulta, tipoTV) {
     }
     
     var data = await response.json();
-    return data.candidates[0].content.parts[0].text;
+    
+    if (!data.candidates || !data.candidates[0].content.parts[0].text) {
+        throw new Error('Respuesta vacía o inválida de Gemini');
+    }
+    
+    var respuesta = data.candidates[0].content.parts[0].text;
+    
+    if (data.candidates[0].finishReason === 'MAX_TOKENS') {
+        respuesta += '\n\n---\n⚠️ *Nota: La respuesta fue truncada por ser muy larga.*';
+    }
+    
+    return respuesta;
 }
 
-// Función para mostrar resultados
+// 6. Función para mostrar resultados
 function mostrarResultados(texto) {
     var html = texto
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
