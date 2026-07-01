@@ -9,10 +9,9 @@
 <body class="login-page">
     <div class="login-container">
         <div class="login-box">
-                <!-- 👇 NUEVO: Logo principal -->
-    <div class="logo-container">
-        <img src="Logo-nuevo-metodo-oc.webp" alt="Logo Omar Cuellar" class="logo-main">
-    </div>
+            <div class="logo-container">
+                <img src="Logo-nuevo-metodo-oc.webp" alt="Logo Omar Cuellar" class="logo-main">
+            </div>
             <h1>🔧 Asistente Técnico</h1>
             <p class="subtitle">Para reparadores de TVs TRC y LCD/LED</p>
             
@@ -34,33 +33,6 @@
         </div>
     </div>
     
-    <script src="config.js"></script>
-    <script>
-        // Usuarios de ejemplo (en producción, usar backend)
-        const usuarios = {
-            'tecnico1': 'clave123',
-            'reparador': 'tv2024',
-            'admin': 'admin2026'
-        };
-        
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-            
-            if (usuarios[user] && usuarios[user] === pass) {
-                localStorage.setItem('usuario', user);
-                window.location.href = 'app.html';
-            } else {
-                alert('Usuario o contraseña incorrectos');
-            }
-        });
-        
-        // Si ya está logueado, redirigir
-        if (localStorage.getItem('usuario')) {
-            window.location.href = 'app.html';
-        }
-    </script>
     <script src="login.js"></script>
 </body>
 </html>
