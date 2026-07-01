@@ -8,11 +8,15 @@ document.getElementById('loginForm').addEventListener('submit', function(e) {
     const pass = document.getElementById('password').value.trim();
     
     // Credenciales (puedes cambiarlas aquí)
-    const VALID_USER = 'admin';
-    const VALID_PASS = 'admin2026';
+    const usuarios = {
+        'tecnico1': 'clave123',
+        'reparador': 'tv2024',
+        'admin': 'admin2026'
+    };
     
-    if (user === VALID_USER && pass === VALID_PASS) {
+    if (usuarios[user] && usuarios[user] === pass) {
         sessionStorage.setItem('userLoggedIn', 'true');
+        sessionStorage.setItem('currentUser', user);
         window.location.href = 'app.html';
     } else {
         alert('❌ Usuario o contraseña incorrectos');
