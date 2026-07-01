@@ -25,6 +25,10 @@ document.querySelectorAll('.btn-tv-type').forEach(function(button) {
 // ============================================
 // 📤 ENVÍO DEL FORMULARIO DE BÚSQUEDA
 // ============================================
+// 🔍 LOGS DE DEPURACIÓN
+console.log('🔍 app.js cargado correctamente');
+console.log('🔍 Formulario searchForm:', document.getElementById('searchForm') ? '✅ Encontrado' : '❌ NO encontrado');
+console.log('🔍 Botones TV type:', document.querySelectorAll('.btn-tv-type').length);
 document.getElementById('searchForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
