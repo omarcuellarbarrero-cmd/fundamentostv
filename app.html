@@ -7,66 +7,62 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header>
-    <div class="header-content">
-        <div class="header-left">
-            <img src="Logo-nuevo-metodo-oc.webp" alt="Logo" class="logo-header">
-            <h1>🔧 Fundamentación Técnica - Asistente Técnico</h1>
-        </div>
-        <button id="logoutBtn" class="btn-logout">🚪 Salir</button>
-    </div>
-</header>
-    
-    <main class="container">
-        <!-- Selección de tipo de TV -->
-        <section class="tv-selection">
-            <h2>Seleccione el tipo de TV:</h2>
-            <div class="tv-buttons">
-                <button class="tv-btn" data-type="TRC">
-                    <span class="icon">📺</span>
-                    <span class="label">TV TRC</span>
-                    <span class="desc">(Tubo de rayos catódicos)</span>
-                </button>
-                <button class="tv-btn" data-type="LCD">
-                    <span class="icon">🖥️</span>
-                    <span class="label">TV LCD/LED</span>
-                    <span class="desc">(Pantalla plana)</span>
-                </button>
+    <div class="container">
+        <header class="app-header">
+            <div class="logo-container">
+                <img src="Logo-nuevo-metodo-oc.webp" alt="Logo" class="logo-main">
             </div>
-        </section>
-        
-        <!-- Búsqueda -->
-        <section class="search-section">
-            <div class="search-box">
-                <label for="searchInput">¿Qué necesita saber o recordar?</label>
-                <input 
-                    type="text" 
-                    id="searchInput" 
-                    placeholder="Ej: fuente de alimentación, vertical, horizontal..."
-                    autocomplete="off"
-                >
-                <button id="searchBtn" class="btn-primary">🔍 Buscar Información</button>
-            </div>
-        </section>
-        
-        <!-- Resultados -->
-<section id="resultsSection" class="results-section hidden">
-    <div class="results-header">
-        <h3>Respuesta:</h3>
-        <button id="listenBtn" class="btn-secondary" title="Escuchar respuesta">
-            🔊 Escuchar
-        </button>
+            <h1>🔧 Fundamentación Técnica</h1>
+            <p class="subtitle">Asistente Técnico Virtual</p>
+            <button id="logoutBtn" class="btn-logout">🚪 Salir</button>
+        </header>
+
+        <main class="app-main">
+            <!-- Selección de tipo de TV -->
+            <section class="card">
+                <h2>📺 Seleccione el tipo de TV</h2>
+                <div class="tv-type-selector">
+                    <button type="button" class="btn-tv-type" data-type="TRC">
+                        📺 TV TRC<br><small>(Tubo de rayos catódicos)</small>
+                    </button>
+                    <button type="button" class="btn-tv-type" data-type="LCD/LED">
+                        🖥️ TV LCD/LED<br><small>(Pantalla plana)</small>
+                    </button>
+                </div>
+                <p id="tvTypeSelected" class="selection-indicator"></p>
+            </section>
+
+            <!-- Formulario de búsqueda -->
+            <section class="card">
+                <h2>🔍 Buscar Concepto</h2>
+                <form id="searchForm">
+                    <div class="form-group">
+                        <label for="searchTerm">¿Qué necesita saber o recordar?</label>
+                        <input type="text" id="searchTerm" placeholder="Ej: Flyback, T-Con, Fuente conmutada..." required>
+                    </div>
+                    <button type="submit" class="btn-primary">🔍 Buscar Información</button>
+                </form>
+            </section>
+
+            <!-- Resultados -->
+            <section class="card" id="resultSection" style="display: none;">
+                <h2>📚 Explicación</h2>
+                
+                <button id="btnVoice" class="btn-voice-simple" title="Escuchar explicación">
+                    <span class="voice-icon-simple">🔊</span>
+                    <span id="voiceLabel">Escuchar explicación</span>
+                </button>
+                
+                <div class="result-content" id="resultContent"></div>
+                <button id="newSearchBtn" class="btn-secondary">🔄 Nueva Búsqueda</button>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>Tutor Virtual v1.0 — Powered by Groq AI</p>
+        </footer>
     </div>
-    
-    
-    <div id="resultsContent" class="results-content"></div>
-</section>
-        <!-- Loading -->
-        <div id="loading" class="loading hidden">
-            <div class="spinner"></div>
-            <p>Buscando información...</p>
-        </div>
-    </main>
-    
+
+    <script src="app.js"></script>
 </body>
 </html>
