@@ -1,10 +1,11 @@
-FROM nginx:alpine
+FROM php:8.4-fpm-alpine
 
-# Copiar archivos del proyecto a la carpeta de Nginx
+RUN apk add --no-cache nginx curl
+
 COPY . /usr/share/nginx/html
 
-# Exponer puerto 80
+COPY nginx.conf /etc/nginx/http.d/default.conf
+
 EXPOSE 80
 
-# Nginx ya inicia automáticamente
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
