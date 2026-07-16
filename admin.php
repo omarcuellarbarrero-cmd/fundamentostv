@@ -35,17 +35,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // --- AGREGAR USUARIO ---
     if ($action === 'add_user') {
+        // Limpiar y normalizar el usuario (minúsculas y sin espacios)
+        $cleanUsername = strtolower(trim($_POST['username']));
         $hash = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        
         try {
             $stmt = $db->prepare("INSERT INTO users (username, password_hash, is_admin, activo) VALUES (?, ?, ?, 1)");
             $stmt->execute([
-                strtolower(trim($_POST['username'])), 
+                $cleanUsername, 
                 $hash, 
                 isset($_POST['is_admin']) ? 1 : 0
             ]);
-            $message = "✅ Usuario creado correctamente.";
+            $message = "✅ Usuario '$cleanUsername' creado correctamente.";
         } catch (PDOException $e) {
-            $message = "❌ Error: El nombre de usuario ya existe.";
+            // Verificar si es específicamente un error de "UNIQUE constraint failed"
+            if (strpos($e->getMessage(), 'UNIQUE constraint failed') !== false) {
+                $message = "❌ Error: El usuario '$cleanUsername' ya está registrado.";
+            } else {
+                // Mostrar el error real de la base de datos para diagnosticar
+                $message = "❌ Error de BD: " . $e->getMessage();
+            }
         }
     }
     // --- ACTUALIZAR USUARIO ---
