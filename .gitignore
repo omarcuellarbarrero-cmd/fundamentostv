@@ -23,3 +23,8 @@ vendor/
 
 # Configuración de VS Code personal (opcional)
 .vscode/settings.json
+# Ignorar base de datos y archivos sensibles
+data/
+*.db
+config.php
+.env
