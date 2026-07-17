@@ -1,15 +1,15 @@
 FROM php:8.4-fpm-alpine
 
-# Instalamos Nginx, curl del sistema y las herramientas de desarrollo para PHP
-RUN apk add --no-cache nginx curl libcurl
+# Instalamos dependencias del sistema y los paquetes -dev necesarios para compilar
+RUN apk add --no-cache nginx curl libcurl curl-dev
 
-# ¡IMPORTANTE! Instalamos y activamos la extensión cURL dentro de PHP
+# Ahora PHP sí encontrará las librerías necesarias para compilar la extensión
 RUN docker-php-ext-install curl
 
-# Copiamos los archivos de la app
+# Copiamos los archivos de la app al directorio de Nginx
 COPY . /usr/share/nginx/html
 
-# Aseguramos que Nginx y PHP puedan leer/escribir los archivos correctamente
+# Aseguramos los permisos correctos para Nginx y PHP
 RUN chown -R www-data:www-data /usr/share/nginx/html
 
 COPY nginx.conf /etc/nginx/http.d/default.conf
