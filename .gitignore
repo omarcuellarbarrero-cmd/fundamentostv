@@ -28,3 +28,8 @@ data/
 *.db
 config.php
 .env
+# Ignorar base de datos y archivos sensibles
+data/
+*.db
+*.sqlite
+*.sqlite3
