@@ -20,7 +20,7 @@ $is_admin = !empty($_SESSION['is_admin']);
     <!-- Tus estilos originales -->
     <link rel="stylesheet" href="styles.css">
     
-    <!-- Estilos adicionales para la sesión -->
+    <!-- Estilos adicionales para la sesión (Barra superior) -->
     <style>
         .user-info {
             position: absolute;
@@ -30,47 +30,46 @@ $is_admin = !empty($_SESSION['is_admin']);
             align-items: center;
             gap: 15px;
             z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .user-name {
-            color: white;
+            color: #2c3e50;
             font-weight: 600;
+            font-size: 14px;
         }
-        .btn-logout {
+        .btn-logout-top {
             background: #e74c3c;
             color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
+            padding: 6px 12px;
+            border-radius: 6px;
             text-decoration: none;
             font-weight: 600;
+            font-size: 13px;
             transition: background 0.3s;
         }
-        .btn-logout:hover {
+        .btn-logout-top:hover {
             background: #c0392b;
         }
     </style>
 </head>
 <body>
-    <!-- Información del usuario -->
+    <!-- Barra de información del usuario (Siempre visible) -->
     <div class="user-info">
         <span class="user-name">👋 Hola, <?= $username ?></span>
-        <a href="logout.php" class="btn-logout">🚪 Cerrar Sesión</a>
+        <a href="logout.php" class="btn-logout-top">🚪 Salir</a>
     </div>
 
-    <!-- ========================================== -->
-    <!-- AQUÍ PEGA EL CONTENIDO DE app.html -->
-    <!-- ========================================== -->
-    
-    <!-- Copia TODO lo que estaba entre <body> y </body> en app.html -->
-    <!-- y pégalo aquí, EXCEPTO cualquier botón de logout que ya tengas -->
-    
-   <div class="container">
+    <div class="container">
         <header class="app-header">
             <div class="logo-container">
                 <img src="Logo-nuevo-metodo-oc.webp" alt="Logo" class="logo-main">
             </div>
             <h1>🔧 Fundamentación Técnica</h1>
             <p class="subtitle">Asistente Técnico Virtual</p>
-            <button id="logoutBtn" class="btn-logout">🚪 Salir</button>
+            <!-- NOTA: Se eliminó el botón "Salir" antiguo para evitar conflictos con JS -->
         </header>
 
         <main class="app-main">
@@ -118,30 +117,19 @@ $is_admin = !empty($_SESSION['is_admin']);
             <p>Tutor Virtual v1.0 — Powered by Groq AI</p>
         </footer>
     </div>
-        <footer class="app-footer">
-            <p>Asistente Técnico v1.0 — Powered by Groq AI</p>
-        </footer>
-
-    <script src="app.js"></script>
 
     <!-- ========================================== -->
-    <!-- FIN DEL CONTENIDO DE app.html -->
+    <!-- VARIABLES GLOBALES PARA JAVASCRIPT -->
     <!-- ========================================== -->
-
-    <!-- Tus scripts originales -->
-    <script src="app.js"></script>
-    
-    <!-- Script para actualizar el nombre de usuario si es necesario -->
     <script>
-        // Si tu app.js necesita el nombre del usuario, puedes pasarlo así:
+        // Pasamos los datos seguros de PHP a JavaScript
         const currentUser = '<?= $username ?>';
         const isAdmin = <?= $is_admin ? 'true' : 'false' ?>;
         
-        // Si necesitas hacer algo especial para admins:
-        if (isAdmin) {
-            console.log('Usuario administrador detectado');
-            // Puedes agregar botones adicionales aquí si es necesario
-        }
+        console.log("Sesión activa: " + currentUser + " (Admin: " + isAdmin + ")");
     </script>
+
+    <!-- Tu script original (Cargado UNA sola vez al final) -->
+    <script src="app.js"></script>
 </body>
 </html>
