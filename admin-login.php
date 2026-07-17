@@ -7,13 +7,51 @@ if (isset($_SESSION['user_id']) && !empty($_SESSION['is_admin'])) {
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// DEFINICIÓN DE RUTA COMÚN (Usa __DIR__ para que se adapte a cualquier carpeta)
+$dataDir = __DIR__ . '/data';
+$dbPath = $dataDir . '/users.db';
+
+// MECANISMO DE AUTO-CREACIÓN: Si no existe el archivo, lo configuramos desde cero
+if (!file_exists($dbPath)) {
+    try {
+        if (!is_dir($dataDir)) {
+            mkdir($dataDir, 0775, true);
+        }
+        
+        $db = new PDO('sqlite:' . $dbPath);
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        // Creamos la tabla con la estructura que tu script necesita
+        $db->exec("CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            activo INTEGER DEFAULT 1,
+            is_admin INTEGER DEFAULT 1
+        )");
+        
+        // CREA AQUÍ TU USUARIO ADMIN INICIAL
+        // Puedes cambiar 'admin' y 'admin2026' por lo que gustes
+        $defaultUser = 'admin';
+        $defaultPass = password_hash('admin2026', PASSWORD_BCRYPT);
+        
+        $initStmt = $db->prepare("INSERT OR IGNORE INTO users (username, password_hash, activo, is_admin) VALUES (?, ?, 1, 1)");
+        $initStmt->execute([$defaultUser, $defaultPass]);
+        
+    } catch (Exception $e) {
+        $error = 'Error inicializando la base de datos: ' . $e->getMessage();
+    }
+}
+
+// PROCESAMIENTO DEL LOGIN ENVIADO POR EL FORMULARIO
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($error)) {
     $username = strtolower(trim($_POST['username']));
     $password = $_POST['password'];
     
-    $dbPath = __DIR__ . '/data/users.db';
     try {
         $db = new PDO('sqlite:' . $dbPath);
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
         $stmt = $db->prepare("SELECT * FROM users WHERE username = ? AND activo = 1 AND is_admin = 1");
         $stmt->execute([$username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -28,10 +66,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Credenciales de administrador incorrectas.';
         }
     } catch (PDOException $e) {
-        $error = 'Error de conexión.';
+        // Ahora sí te mostrará el detalle técnico real si algo falla en la conexión interna
+        $error = 'Error de conexión interna: ' . $e->getMessage();
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
