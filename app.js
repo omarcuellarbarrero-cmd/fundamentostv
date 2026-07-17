@@ -2,7 +2,7 @@
 // 🔒 PROTECCIÓN: Verificar sesión activa
 // ============================================
 if (sessionStorage.getItem('userLoggedIn') !== 'true') {
-    window.location.href = 'index.html';
+    window.location.href = 'index.php';
 }
 
 // ============================================
@@ -144,7 +144,7 @@ function formatResponse(text) {
 document.getElementById('logoutBtn').addEventListener('click', function() {
     if (confirm('¿Está seguro que desea salir?')) {
         sessionStorage.removeItem('userLoggedIn');
-        window.location.href = 'index.html';
+        window.location.href = 'index.php';
     }
 });
 
