@@ -1,7 +1,26 @@
 <?php
-session_start();
-$error = '';
-
+// Configurar sesión antes de iniciar
+if (session_status() === PHP_SESSION_NONE) {
+    // Guardar sesiones en la carpeta data (persistente en Docker)
+    session_save_path(__DIR__ . '/data/sessions');
+    
+    // Crear la carpeta si no existe
+    if (!is_dir(__DIR__ . '/data/sessions')) {
+        mkdir(__DIR__ . '/data/sessions', 0777, true);
+    }
+    
+    // Configurar cookies para HTTPS
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => '',  // Dejar vacío para que use el dominio actual
+        'secure' => true,  // Importante para HTTPS
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
+    
+    session_start();
+}
 // Si ya está logueado, redirigir
 if (isset($_SESSION['user_id'])) {
     if (!empty($_SESSION['is_admin'])) {
